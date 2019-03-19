@@ -5,6 +5,9 @@ from itertools import chain
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from tempfile import NamedTemporaryFile
+import yagmail
+import os
+
 
 
 control_chars = ''.join(map(chr, chain(range(0, 9), range(11, 32), range(127, 160))))
@@ -33,19 +36,18 @@ class ItsyBitsySpider(CrawlSpider):
         
 
     def parse_item(self, response):
-        print(">>>>>>>>>>>>>>>Entrou no parse")
+        print(">>>>>>>>>>>>>>>Entrou no parse>>>>>>>>>>>>>>>")
         if hasattr(response, "text"):
-            print("Entrou no texto")
+            print(">>>>>>>>>>>>>>>Entrou no texto>>>>>>>>>>>>>>>")
             # The response is text - we assume html. Normally we'd do something                                                                                                                    
             # with this, but this demo is just about binary content, so...                                                                                                                         
             pass
         else:
-            print("Entrou no binario")
             # We assume the response is binary data                                                                                                                                                
             # One-liner for testing if "response.url" ends with any of TEXTRACT_EXTENSIONS                                                                                                         
             extension = list(filter(lambda x: response.url.lower().endswith(x), TEXTRACT_EXTENSIONS))[0]
             if extension:
-                print("Entoru no if do binario")
+                print(">>>>>>>>>>>>>>>Entrou no if do binario>>>>>>>>>>>>>>>")
                 # This is a pdf or something else that Textract can process                                                                                                                        
                 # Create a temporary file with the correct extension.                                                                                                     
                 tempfile = NamedTemporaryFile(suffix=extension)
@@ -66,17 +68,27 @@ class ItsyBitsySpider(CrawlSpider):
                     f.close()
 
                 print(">>>>>>>>>>>>>Entrou na busca>>>>>>>>>>>>")
-                names = ['Executivo', 'Raimundo','João']
-                for name in names:
-                    print(name)  
+                names = [['Álvaro', 'Miguel','Gabriel'],['alvarodenegreiros@gmail.com','miguelsrochajr@gmail.com ','carlos.gabriel96@gmail.com ']]
+                for idx, name in  enumerate(names[0]):
                     with open('scraped_content.txt') as text :   
-                        matches = re.finditer(name, text.read(), re.IGNORECASE | re.MULTILINE)
-                        for match in enumerate(matches):
-                            print (match)
+                        matches = re.findall(name, text.read(), re.IGNORECASE | re.MULTILINE)
+                        re.purge()
+                        if len(matches) :
+                            print(">>>>>>>>>>>>> Finded !!! >>>>>>>>>>>>")
+                            contents = "O nome %s apareceu %s vezes." % ( name, len(matches))
+                            print( contents)
+                            yag = yagmail.SMTP('god.themis.project@gmail.com', 'Themisfindmyname42')
+                            yag.send(names[1][idx], 'Themis achou seu nome no Diário Oficial', contents)
+                        else :
+                            print(">>>>>>>>>>>>> Not finded >>>>>>>>>>>>")
                 print(">>>>>>>>>>>>>Saiu da busca>>>>>>>>>>>>")
+                
+                os.remove("scraped_content.txt")
+
+        
 
 
-
+ 
                
 
                
