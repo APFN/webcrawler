@@ -6,6 +6,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from tempfile import NamedTemporaryFile
 
+
 control_chars = ''.join(map(chr, chain(range(0, 9), range(11, 32), range(127, 160))))
 CONTROL_CHAR_RE = re.compile('[%s]' % re.escape(control_chars))
 TEXTRACT_EXTENSIONS = [".pdf"] 
@@ -14,7 +15,6 @@ class CustomLinkExtractor(LinkExtractor):
     def __init__(self, *args, **kwargs):
         super(CustomLinkExtractor, self).__init__(*args, **kwargs)
         # Keep the default values in "deny_extensions" *except* for those types we want.
-        #self.restrict_xpaths= ['//*[@id="Form1"]/section[2]/div/div[2]/div[3]/center[2]/center[1]/h1/p/strong/a']
         self.restrict_xpaths= ['//*[@id="Form1"]']
         self.deny_extensions = [ext for ext in self.deny_extensions if ext not in TEXTRACT_EXTENSIONS]
 
@@ -55,19 +55,30 @@ class ItsyBitsySpider(CrawlSpider):
                 extracted_data = extracted_data.decode('utf-8')
                 extracted_data = CONTROL_CHAR_RE.sub('', extracted_data)
                 tempfile.close()         
-                patterns = ['Raimundo', 'Executivo']  
-                term = "Raimundo"
 
-                for line in extracted_data:
-                    line = line.strip().split(',')  # <--- 
-                    if term == line:             # <--- You can also stay with "if term in line:" if you doesn't care which field the "model" is. 
-                        print(">>>>>>>>>>>>>Achou>>>>>>>>>>>>")
-
-                # if re.search(patterns, extracted_data):
-                #     print(">>>>>>>>>>>>>Achou>>>>>>>>>>>>")
                 
+              
                 with open("scraped_content.txt", "a") as f:
                     f.write(response.url.upper())
                     f.write("\n")                    
                     f.write(extracted_data)
                     f.write("\n\n")
+                    f.close()
+
+                print(">>>>>>>>>>>>>Entrou na busca>>>>>>>>>>>>")
+                names = ['Executivo', 'Raimundo','João']
+                for name in names:
+                    print(name)  
+                    with open('scraped_content.txt') as text :   
+                        matches = re.finditer(name, text.read(), re.IGNORECASE | re.MULTILINE)
+                        for match in enumerate(matches):
+                            print (match)
+                print(">>>>>>>>>>>>>Saiu da busca>>>>>>>>>>>>")
+
+
+
+               
+
+               
+               
+               
