@@ -18,7 +18,9 @@ class CustomLinkExtractor(LinkExtractor):
     def __init__(self, *args, **kwargs):
         super(CustomLinkExtractor, self).__init__(*args, **kwargs)
         # Keep the default values in "deny_extensions" *except* for those types we want.
-        self.restrict_xpaths= ['//*[@id="Form1"]']
+        #self.restrict_xpaths= ['//*[@id="Form1"]']
+        self.restrict_xpaths= ['//*[@id="Form1"]/section[2]/div/div[2]']
+        
         self.deny_extensions = [ext for ext in self.deny_extensions if ext not in TEXTRACT_EXTENSIONS]
 
 
@@ -77,8 +79,8 @@ class ItsyBitsySpider(CrawlSpider):
                             print(">>>>>>>>>>>>> Finded !!! >>>>>>>>>>>>")
                             contents = "O nome %s apareceu %s vezes." % ( name, len(matches))
                             print( contents)
-                            yag = yagmail.SMTP('god.themis.project@gmail.com', 'Themisfindmyname42')
-                            yag.send(names[1][idx], 'Themis achou seu nome no Diário Oficial', contents)
+                            # yag = yagmail.SMTP('god.themis.project@gmail.com', 'Themisfindmyname42')
+                            # yag.send(names[1][idx], 'Themis achou seu nome no Diário Oficial', contents)
                         else :
                             print(">>>>>>>>>>>>> Not finded >>>>>>>>>>>>")
                 print(">>>>>>>>>>>>>Saiu da busca>>>>>>>>>>>>")
